@@ -68,6 +68,10 @@ pattern that already works keeps working:
 rewrite happens on `<CR>`. A phrase spanning a wrap shows no preview and then
 jumps correctly. Search history stores the rewritten form.
 
+Only interactive searches are rewritten: `vim.fn.search()` and a pattern typed
+as an Ex command are unaffected. `require("wrapsearch").rewrite(pat)` opts
+those in by hand.
+
 A comment leader at the start of a continuation line is not skipped, so a
 phrase spanning a `%`-commented line in LaTeX is not found.
 

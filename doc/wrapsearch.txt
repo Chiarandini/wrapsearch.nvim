@@ -94,6 +94,11 @@ search, including `n` and `N`, uses the rewritten pattern and is consistent.
 Search history stores the rewritten pattern, so recalling a search with <Up>
 shows `brown\_s\+fox` rather than `brown fox`. It re-runs correctly.
 
+Only interactive searches are rewritten. `CmdlineLeave` does not fire for
+`:/pattern` typed as an Ex command, for `vim.fn.search()`, or for a pattern
+supplied by a plugin, so those are unaffected. Use |wrapsearch.rewrite()| to
+opt those in by hand.
+
 A comment leader at the start of a continuation line is not skipped. In a
 LaTeX file where a wrapped paragraph has a `%` at the start of a line, a
 phrase spanning that line is not found. Hard-wrapped prose does not usually
