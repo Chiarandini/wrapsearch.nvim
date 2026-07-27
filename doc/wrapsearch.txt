@@ -1,0 +1,116 @@
+*wrapsearch.txt*	Search across hard-wrapped lines
+
+==============================================================================
+CONTENTS					*wrapsearch-contents*
+
+1. Overview				|wrapsearch-overview|
+2. Setup				|wrapsearch-setup|
+3. Searching verbatim			|wrapsearch-verbatim|
+4. What gets rewritten			|wrapsearch-rewrite|
+5. Limitations				|wrapsearch-limitations|
+6. API					|wrapsearch-api|
+
+==============================================================================
+1. Overview					*wrapsearch-overview*
+
+Hard-wrapped prose breaks search. A sentence that reads >
+	Let $X$ be a scheme. The quick brown
+	fox jumps over the lazy dog.
+<
+contains a newline between "brown" and "fox", so `/brown fox` finds nothing.
+You have to guess where the wrap fell and search for a fragment instead.
+
+wrapsearch rewrites the pattern just before the search runs, so a literal
+space also matches a line break and the next line's indentation. `/brown fox`
+finds the phrase above. Nothing else about searching changes: `n`, `N`,
+|search-offset|, the search register and the highlighting all behave as usual,
+because the rewritten pattern is what Neovim actually searches for.
+
+==============================================================================
+2. Setup					*wrapsearch-setup*
+>lua
+	require("wrapsearch").setup()
+<
+					*wrapsearch-filetypes*
+`filetypes`	Filetypes to act in, or `true` for all buffers. Default: >lua
+		{ "tex", "latex", "plaintex", "markdown", "rst", "text",
+		  "typst", "mail", "gitcommit" }
+<
+		The default list is the filetypes that are usually hard
+		wrapped. In code, a space in a pattern normally means a space,
+		so acting everywhere would be surprising.
+
+					*wrapsearch-keys*
+`keys`		Install the verbatim-search mappings. Default: true.
+
+					*wrapsearch-literal-prefix*
+`literal_prefix`
+		Prefix for the verbatim mappings, giving `g/` and `g?` by
+		default. Set to `false` to install nothing. See
+		|wrapsearch-verbatim|.
+
+`/` and `?` themselves are never remapped. The rewriting happens in a
+|CmdlineLeave| autocommand, so anything else you have bound to those keys
+keeps working.
+
+==============================================================================
+3. Searching verbatim				*wrapsearch-verbatim*
+
+Sometimes a space really does mean a space: you are looking for `foo bar` and
+not for `foo` at the end of one line and `bar` at the start of the next.
+
+`g/`		Search forward, without rewriting.
+`g?`		Search backward, without rewriting.
+
+These suppress the rewrite for one search only. The next `/` behaves normally
+again, whether or not you completed the search.
+
+==============================================================================
+4. What gets rewritten				*wrapsearch-rewrite*
+
+Runs of literal spaces become `\_s\+`, which matches whitespace including a
+line break. Everything else is copied through untouched, so a pattern that
+already works keeps working. In particular these are NOT rewritten:
+
+	`[a b]`		a space inside a collection
+	`a\ b`		a space you escaped yourself
+	`x\{2,3}`	the inside of a quantifier
+
+A trailing |search-offset| is separated off before rewriting and reattached
+afterwards, so `/brown fox/e` still puts the cursor at the end of the match.
+
+Two or more consecutive spaces collapse to a single `\_s\+`. In hard-wrapped
+text, a double space is usually a sentence break that a wrap may have landed
+on, so the looser reading is the useful one.
+
+==============================================================================
+5. Limitations					*wrapsearch-limitations*
+
+'incsearch' previews the pattern you typed, not the rewritten one, because the
+rewrite happens when you press <CR>. A phrase spanning a wrap will therefore
+show no preview match and then jump correctly on <CR>. Everything after the
+search, including `n` and `N`, uses the rewritten pattern and is consistent.
+
+Search history stores the rewritten pattern, so recalling a search with <Up>
+shows `brown\_s\+fox` rather than `brown fox`. It re-runs correctly.
+
+A comment leader at the start of a continuation line is not skipped. In a
+LaTeX file where a wrapped paragraph has a `%` at the start of a line, a
+phrase spanning that line is not found. Hard-wrapped prose does not usually
+comment mid-paragraph, so this has not been worth the ambiguity it would add.
+
+==============================================================================
+6. API						*wrapsearch-api*
+
+						*wrapsearch.setup()*
+`require("wrapsearch").setup([opts])`
+		Apply configuration, install the autocommand, and (unless
+		`keys = false`) the verbatim mappings.
+
+						*wrapsearch.rewrite()*
+`require("wrapsearch").rewrite(pat)`
+		Return `pat` with literal spaces rewritten. Useful for wiring
+		the same behaviour into another search UI, such as a fuzzy
+		picker's grep input.
+
+vim:tw=78:ts=8:noet:ft=help:norl:

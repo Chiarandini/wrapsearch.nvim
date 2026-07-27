@@ -1,0 +1,13 @@
+wrapsearch-api	wrapsearch.txt	/*wrapsearch-api*
+wrapsearch-contents	wrapsearch.txt	/*wrapsearch-contents*
+wrapsearch-filetypes	wrapsearch.txt	/*wrapsearch-filetypes*
+wrapsearch-keys	wrapsearch.txt	/*wrapsearch-keys*
+wrapsearch-limitations	wrapsearch.txt	/*wrapsearch-limitations*
+wrapsearch-literal-prefix	wrapsearch.txt	/*wrapsearch-literal-prefix*
+wrapsearch-overview	wrapsearch.txt	/*wrapsearch-overview*
+wrapsearch-rewrite	wrapsearch.txt	/*wrapsearch-rewrite*
+wrapsearch-setup	wrapsearch.txt	/*wrapsearch-setup*
+wrapsearch-verbatim	wrapsearch.txt	/*wrapsearch-verbatim*
+wrapsearch.rewrite()	wrapsearch.txt	/*wrapsearch.rewrite()*
+wrapsearch.setup()	wrapsearch.txt	/*wrapsearch.setup()*
+wrapsearch.txt	wrapsearch.txt	/*wrapsearch.txt*
