@@ -2,14 +2,19 @@
 
 Search across hard-wrapped lines.
 
+![Searching a phrase that straddles a hard wrap](assets/wrapsearch.gif)
+
+*`/quasi-coherent\ sheaf` keeps the space literal and finds nothing.
+`/quasi-coherent sheaf` matches across the break; `:echo @/` shows the pattern
+that actually ran.*
+
 Hard-wrapped prose breaks search. This paragraph:
 
 ```tex
-Let $X$ be a scheme. The quick brown
-fox jumps over the lazy dog.
+The quick brown fox
+jumps over the lazy dog.
 ```
-
-has a newline between `brown` and `fox`, so `/brown fox` finds nothing. You
+has a newline between `fox` and `jump`, so `/fox jump` finds nothing. You
 end up guessing where the wrap fell and searching for a fragment instead.
 
 wrapsearch rewrites the pattern just before the search runs, so a literal
@@ -76,10 +81,3 @@ A comment leader at the start of a continuation line is not skipped, so a
 phrase spanning a `%`-commented line in LaTeX is not found.
 
 See `:help wrapsearch` for the rest.
-
-## Tests
-
-```bash
-nvim --headless -u NONE +"luafile tests/test_pattern.lua" +qa!
-nvim --headless -u NONE +"luafile tests/test_search.lua"  +qa!
-```
