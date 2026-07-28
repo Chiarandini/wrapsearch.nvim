@@ -4,10 +4,6 @@ Search across hard-wrapped lines.
 
 ![Searching a phrase that straddles a hard wrap](assets/wrapsearch.gif)
 
-*`/quasi-coherent\ sheaf` keeps the space literal and finds nothing.
-`/quasi-coherent sheaf` matches across the break; `:echo @/` shows the pattern
-that actually ran.*
-
 Hard-wrapped prose breaks search. This paragraph:
 
 ```tex
