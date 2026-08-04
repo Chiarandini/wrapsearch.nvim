@@ -68,9 +68,9 @@ again, whether or not you completed the search.
 ==============================================================================
 4. What gets rewritten				*wrapsearch-rewrite*
 
-Runs of literal spaces become `\_s\+`, which matches whitespace including a
-line break. Everything else is copied through untouched, so a pattern that
-already works keeps working. In particular these are NOT rewritten:
+A literal space becomes `\_s\+`, which matches whitespace including a line
+break. Everything else is copied through untouched, so a pattern that already
+works keeps working. In particular these are NOT rewritten:
 
 	`[a b]`		a space inside a collection
 	`a\ b`		a space you escaped yourself
@@ -79,9 +79,17 @@ already works keeps working. In particular these are NOT rewritten:
 A trailing |search-offset| is separated off before rewriting and reattached
 afterwards, so `/brown fox/e` still puts the cursor at the end of the match.
 
-Two or more consecutive spaces collapse to a single `\_s\+`. In hard-wrapped
-text, a double space is usually a sentence break that a wrap may have landed
-on, so the looser reading is the useful one.
+						*wrapsearch-magic*
+|/magic| is honoured, including a mode switched part way through the pattern.
+Under `\v` the replacement is spelled bare, `\_s+`, because there `\+` is a
+literal plus sign; under `\M` and `\V` a collection is `\[...]` and a bare `[`
+is an ordinary character, so a space next to one is still rewritten.
+
+A run of n spaces becomes `\_s\{n,}`: n or more whitespace characters. `/  `
+therefore still means two spaces and does not match one, and a wrap can supply
+the count as a line break plus the next line's indentation. Where a wrap has
+consumed one of the spaces outright, so that fewer whitespace characters remain
+than you typed, search for a single space instead.
 
 ==============================================================================
 5. Limitations					*wrapsearch-limitations*

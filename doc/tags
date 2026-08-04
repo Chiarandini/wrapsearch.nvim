@@ -4,6 +4,7 @@ wrapsearch-filetypes	wrapsearch.txt	/*wrapsearch-filetypes*
 wrapsearch-keys	wrapsearch.txt	/*wrapsearch-keys*
 wrapsearch-limitations	wrapsearch.txt	/*wrapsearch-limitations*
 wrapsearch-literal-prefix	wrapsearch.txt	/*wrapsearch-literal-prefix*
+wrapsearch-magic	wrapsearch.txt	/*wrapsearch-magic*
 wrapsearch-overview	wrapsearch.txt	/*wrapsearch-overview*
 wrapsearch-rewrite	wrapsearch.txt	/*wrapsearch-rewrite*
 wrapsearch-setup	wrapsearch.txt	/*wrapsearch-setup*

@@ -52,15 +52,18 @@ for one search.
 
 ## What is and is not rewritten
 
-Runs of literal spaces become `\_s\+`. Everything else is copied through, so a
-pattern that already works keeps working:
+A literal space becomes `\_s\+`, and a run of n spaces becomes `\_s\{n,}`, so
+`/  ` still means two spaces. Everything else is copied through, so a pattern
+that already works keeps working:
 
 | Pattern | Result |
 |---|---|
 | `brown fox` | `brown\_s\+fox` |
+| `two  spaces` | `two\_s\{2,}spaces`, two spaces still need two |
 | `[a b]x` | unchanged, space is inside a collection |
 | `a\ b` | unchanged, you escaped it yourself |
 | `x\{2,3} y` | `x\{2,3}\_s\+y`, the quantifier is left alone |
+| `\vbrown fox` | `\vbrown\_s+fox`, spelled for the pattern's `\v`, `\M` or `\V` |
 | `brown fox/e` | offset split off, reattached after rewriting |
 
 ## Limitations

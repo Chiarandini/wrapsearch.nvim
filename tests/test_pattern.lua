@@ -19,7 +19,9 @@ local J = P.JOIN
 eq(P.rewrite("brown fox"),        "brown" .. J .. "fox",        "single space")
 eq(P.rewrite("a b c"),            "a" .. J .. "b" .. J .. "c",  "several spaces")
 eq(P.rewrite("nospace"),          "nospace",                     "no space is untouched")
-eq(P.rewrite("two  spaces"),      "two" .. J .. "spaces",        "a run collapses to one join")
+eq(P.rewrite("two  spaces"),      [[two\_s\{2,}spaces]],         "a run of two keeps requiring two")
+eq(P.rewrite("wide   gap"),       [[wide\_s\{3,}gap]],           "a longer run counts")
+eq(P.rewrite("  "),               [[\_s\{2,}]],                  "nothing but spaces")
 eq(select(2, P.rewrite("plain")), false,                         "unchanged reports false")
 eq(select(2, P.rewrite("a b")),   true,                          "changed reports true")
 
@@ -31,6 +33,20 @@ eq(P.rewrite([[x\{2,3} y]]),      [[x\{2,3}]] .. J .. "y",       "quantifier the
 eq(P.rewrite([[\Vfoo bar]]),      [[\Vfoo]] .. J .. "bar",       "very nomagic prefix")
 eq(P.rewrite([[foo\_sbar]]),      [[foo\_sbar]],                 "existing \\_s untouched")
 eq(P.rewrite([[a[ ]b c]]),        [[a[ ]b]] .. J .. "c",         "collection then real space")
+eq(P.rewrite([[a\  b]]),          [[a\ ]] .. J .. "b",           "escaped space then a real one")
+
+-- ── magic modes ──────────────────────────────────────────────────────
+-- Under \v the quantifiers are bare: `\+` would be a literal plus sign.
+eq(P.rewrite([[\vbrown fox]]),    [[\vbrown\_s+fox]],            "very magic single space")
+eq(P.rewrite([[\vtwo  spaces]]),  [[\vtwo\_s{2,}spaces]],        "very magic run of spaces")
+eq(P.rewrite([[\va b\mc d]]),     [[\va\_s+b\mc]] .. J .. "d",   "mode switch mid-pattern")
+eq(P.rewrite([[a b\vc d]]),       "a" .. J .. [[b\vc\_s+d]],     "magic until \\v appears")
+eq(P.rewrite([[\vx{2,3} y]]),     [[\vx{2,3}\_s+y]],             "very magic quantifier is bare")
+eq(P.rewrite([[\v[a b]x y]]),     [[\v[a b]x\_s+y]],             "very magic collection")
+-- Under \M and \V a collection needs `\[`; a bare `[` is just a character.
+eq(P.rewrite([[\M\[a b]x]]),      [[\M\[a b]x]],                 "nomagic collection")
+eq(P.rewrite("\\Mfoo[a b]"),      [[\Mfoo[a]] .. J .. "b]",      "nomagic bare bracket is literal")
+eq(P.rewrite([[\V\[a b]x y]]),    [[\V\[a b]x]] .. J .. "y",     "very nomagic collection")
 
 -- ── split_offset ─────────────────────────────────────────────────────
 local function so(s, sep) local a, b = P.split_offset(s, sep); return a .. "||" .. b end

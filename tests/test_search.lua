@@ -21,6 +21,7 @@ local lines = {
   "fox jumps over the lazy dog, and the",
   "    indented continuation follows it.",
   "unrelated tail",
+  "a double  space, on one line.",
 }
 vim.api.nvim_buf_set_lines(0, 0, -1, false, lines)
 
@@ -34,8 +35,21 @@ search("/brown fox<CR>")
 check("phrase across a hard wrap", 1, 31)
 
 -- 2. Still works when the break is followed by indentation.
-search("/the     indented<CR>")
+search("/the indented<CR>")
 check("wrap followed by indentation", 2, 33)
+
+-- 2a. A run of n spaces needs n whitespace characters, which a wrap plus a
+-- four-space indent supplies exactly.
+search("/the     indented<CR>")
+check("five spaces span a wrap and its indent", 2, 33)
+
+-- 2b. A very magic pattern needs the bare-quantifier spelling to be a valid
+-- regex at all, so this fails loudly if the rewrite gets the mode wrong.
+search([[/\vbrown fox<CR>]])
+check("very magic across a hard wrap", 1, 31)
+
+search([[/\vdouble  space<CR>]])
+check("very magic run of spaces", 5, 2)
 
 -- 3. A phrase entirely on one line is unaffected.
 search("/quick brown<CR>")
@@ -72,6 +86,14 @@ if not vim.fn.getreg("/"):find([[\_s\+]], 1, true) then
   fails = fails + 1
   io.stderr:write("FAIL offset form was not rewritten: " .. vim.fn.getreg("/") .. "\n")
 end
+
+-- 7a. Two spaces still mean two: they find a real double space...
+search("/double  space<CR>")
+check("double space matches a double space", 5, 2)
+
+-- ...and do not match a single one.
+search("/lazy  dog<CR>")
+check("double space does not match a single space", 1, 0)
 
 -- 8. Filetype gating: inactive filetypes are left alone.
 require("wrapsearch").setup({ filetypes = { "tex" } })
