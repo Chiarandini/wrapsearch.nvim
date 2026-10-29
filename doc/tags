@@ -9,6 +9,7 @@ wrapsearch-overview	wrapsearch.txt	/*wrapsearch-overview*
 wrapsearch-rewrite	wrapsearch.txt	/*wrapsearch-rewrite*
 wrapsearch-setup	wrapsearch.txt	/*wrapsearch-setup*
 wrapsearch-verbatim	wrapsearch.txt	/*wrapsearch-verbatim*
+wrapsearch.literal()	wrapsearch.txt	/*wrapsearch.literal()*
 wrapsearch.rewrite()	wrapsearch.txt	/*wrapsearch.rewrite()*
 wrapsearch.setup()	wrapsearch.txt	/*wrapsearch.setup()*
 wrapsearch.txt	wrapsearch.txt	/*wrapsearch.txt*

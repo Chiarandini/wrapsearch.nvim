@@ -60,6 +60,7 @@ local function on_cmdline_leave()
 end
 
 --- Start a verbatim search, for when you do mean "exactly one space here".
+--- Returns `key`; call it from an `expr` mapping.
 ---
 --- An `expr` mapping rather than `nvim_feedkeys`: returning the key runs it in
 --- the mapping's own position in the input stream, whereas feeding it would
@@ -67,7 +68,7 @@ end
 --- `foo` as normal-mode commands and then open an empty prompt.
 ---@param key "/"|"?"
 ---@return string
-local function literal_search(key)
+function M.literal(key)
   skip_once = true
   return key
 end
@@ -84,10 +85,19 @@ function M.setup(opts)
 
   local prefix = M.config.literal_prefix
   if M.config.keys and prefix then
-    vim.keymap.set({ "n", "x" }, prefix .. "/", function() return literal_search("/") end,
-      { expr = true, desc = "search (verbatim, ignore hard wraps)" })
-    vim.keymap.set({ "n", "x" }, prefix .. "?", function() return literal_search("?") end,
-      { expr = true, desc = "search backward (verbatim, ignore hard wraps)" })
+    local maps = {
+      { "/", "search (verbatim, ignore hard wraps)" },
+      { "?", "search backward (verbatim, ignore hard wraps)" },
+    }
+    for _, m in ipairs(maps) do
+      for _, mode in ipairs({ "n", "x" }) do
+        -- A mapping already on the key is yours: keep it.
+        if vim.fn.maparg(prefix .. m[1], mode) == "" then
+          vim.keymap.set(mode, prefix .. m[1], function() return M.literal(m[1]) end,
+            { expr = true, desc = m[2] })
+        end
+      end
+    end
   end
 end
 

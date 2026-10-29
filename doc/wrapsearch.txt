@@ -41,7 +41,8 @@ because the rewritten pattern is what Neovim actually searches for.
 		so acting everywhere would be surprising.
 
 					*wrapsearch-keys*
-`keys`		Install the verbatim-search mappings. Default: true.
+`keys`		Install the verbatim-search mappings. Default: true. A
+		key that already has a mapping is left alone.
 
 					*wrapsearch-literal-prefix*
 `literal_prefix`
@@ -120,6 +121,15 @@ comment mid-paragraph, so this has not been worth the ambiguity it would add.
 		Apply configuration, install the autocommand, and (unless
 		`keys = false`) the verbatim mappings.
 
+						*wrapsearch.literal()*
+`require("wrapsearch").literal(key)`
+		Suppress the rewrite for the next search and return `key`
+		(`"/"` or `"?"`). Map it as an `expr` mapping to put the
+		verbatim search on a key of your own: >lua
+		    vim.keymap.set({ "n", "x" }, "<leader>/", function()
+		      return require("wrapsearch").literal("/")
+		    end, { expr = true })
+<
 						*wrapsearch.rewrite()*
 `require("wrapsearch").rewrite(pat)`
 		Return `pat` with literal spaces rewritten. Useful for wiring
